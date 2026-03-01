@@ -132,8 +132,45 @@ export default function DashboardClient({
 
       {/* AMBIENT GLOW */}
       <div style={{ position: 'fixed', bottom: -120, left: '50%', transform: 'translateX(-50%)', width: 700, height: 240, background: 'radial-gradient(ellipse, rgba(0,255,136,0.05) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
-      {/* SCANLINE */}
-      <div style={{ position: 'fixed', left: 0, right: 0, height: 2, background: 'linear-gradient(to right, transparent, rgba(0,255,136,0.12), transparent)', animation: 'scanline 10s linear infinite', zIndex: 1, pointerEvents: 'none' }} />
+
+      {/* FLOATING TICKETS */}
+      {[
+        { top: '8%',  left: '3%',  rot: -18, delay: '0s',   dur: '18s', op: 0.07, scale: 0.9 },
+        { top: '22%', left: '5%',  rot:  12, delay: '3s',   dur: '22s', op: 0.05, scale: 0.7 },
+        { top: '55%', left: '2%',  rot: -8,  delay: '7s',   dur: '20s', op: 0.08, scale: 1.0 },
+        { top: '75%', left: '4%',  rot:  20, delay: '1s',   dur: '25s', op: 0.05, scale: 0.75 },
+        { top: '12%', right: '3%', rot:  15, delay: '2s',   dur: '19s', op: 0.07, scale: 0.85 },
+        { top: '38%', right: '2%', rot: -22, delay: '5s',   dur: '23s', op: 0.06, scale: 1.0 },
+        { top: '62%', right: '4%', rot:  8,  delay: '9s',   dur: '21s', op: 0.08, scale: 0.7 },
+        { top: '85%', right: '3%', rot: -14, delay: '4s',   dur: '17s', op: 0.05, scale: 0.9 },
+      ].map((t, i) => (
+        <div key={i} style={{
+          position: 'fixed', top: t.top, left: (t as any).left, right: (t as any).right,
+          transform: `rotate(${t.rot}deg) scale(${t.scale})`,
+          opacity: t.op, pointerEvents: 'none', zIndex: 0,
+          animation: `ticketFloat ${t.dur} ease-in-out ${t.delay} infinite alternate`,
+        }}>
+          <svg width="52" height="26" viewBox="0 0 52 26" fill="none">
+            <rect x="1" y="1" width="50" height="24" rx="4" stroke="#00ff88" strokeWidth="1.2" fill="none"/>
+            <circle cx="1" cy="13" r="4" fill="#060808" stroke="#00ff88" strokeWidth="1.2"/>
+            <circle cx="51" cy="13" r="4" fill="#060808" stroke="#00ff88" strokeWidth="1.2"/>
+            <line x1="5" y1="13" x2="47" y2="13" stroke="#00ff88" strokeWidth="0.6" strokeDasharray="3 3"/>
+            <rect x="8" y="6" width="18" height="3" rx="1.5" fill="#00ff88" opacity="0.4"/>
+            <rect x="8" y="12" width="12" height="2" rx="1" fill="#00ff88" opacity="0.25"/>
+            <rect x="8" y="17" width="8" height="2" rx="1" fill="#00ff88" opacity="0.2"/>
+            <rect x="36" y="6" width="8" height="12" rx="1.5" fill="#00ff88" opacity="0.08" stroke="#00ff88" strokeWidth="0.6"/>
+            <text x="40" y="15" fontSize="5" fill="#00ff88" opacity="0.5" textAnchor="middle" fontFamily="monospace">★</text>
+          </svg>
+        </div>
+      ))}
+      <style>{`
+        @keyframes ticketFloat {
+          0%   { transform: translateY(0px) rotate(var(--r, 0deg)); }
+          33%  { transform: translateY(-12px) rotate(calc(var(--r, 0deg) + 3deg)); }
+          66%  { transform: translateY(6px) rotate(calc(var(--r, 0deg) - 2deg)); }
+          100% { transform: translateY(-8px) rotate(var(--r, 0deg)); }
+        }
+      `}</style>
 
       {/* TOPBAR */}
       <div style={{ background: '#080d08', borderBottom: '1px solid #0d2b0d', padding: '0 28px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
