@@ -31,10 +31,16 @@ export function calcBroker(b: Broker) {
 export function calcMonth(month: { brokers: Broker[], expenses: number }): MonthCalc {
   const totalPayout = month.brokers.reduce((s, b) => s + Number(b.payout), 0)
   const totalMyShare = month.brokers.reduce((s, b) => s + calcBroker(b).myShare, 0)
-  const totalAron = month.brokers.reduce((s, b) => s + calcBroker(b).aronAmt, 0)
   const afterExpenses = totalMyShare - Number(month.expenses)
-  const myProfit = afterExpenses - totalAron
-  return { totalPayout, myShare: totalMyShare, afterExpenses, aronAmt: totalAron, myProfit }
+  // Aron bere % až z částky PO expenses
+  const aronAmt = month.brokers.reduce((s, b) => {
+    const myShare = Number(b.payout) * (Number(b.my_pct) / 100)
+    const ratio = totalMyShare > 0 ? myShare / totalMyShare : 0
+    const myAfterExp = afterExpenses * ratio
+    return s + (myAfterExp > 0 ? myAfterExp * (Number(b.aron_pct) / 100) : 0)
+  }, 0)
+  const myProfit = afterExpenses - aronAmt
+  return { totalPayout, myShare: totalMyShare, afterExpenses, aronAmt, myProfit }
 }
 
 export function calcTotals(months: (Month & MonthCalc)[]) {
@@ -47,5 +53,7 @@ export function calcTotals(months: (Month & MonthCalc)[]) {
   }), { payout: 0, myShare: 0, expenses: 0, aron: 0, mine: 0 })
 }
 
-export const fmtShort = (n: number) =>
-  `$${Math.abs(Math.round(n)).toLocaleString('en-US')}`
+export const fmtShort = (n: number) => {
+  const abs = Math.abs(Math.round(n))
+  return n < 0 ? `-$${abs.toLocaleString('en-US')}` : `$${abs.toLocaleString('en-US')}`
+}
