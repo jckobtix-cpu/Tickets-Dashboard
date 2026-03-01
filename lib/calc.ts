@@ -32,7 +32,6 @@ export function calcMonth(month: { brokers: Broker[], expenses: number }): Month
   const totalPayout = month.brokers.reduce((s, b) => s + Number(b.payout), 0)
   const totalMyShare = month.brokers.reduce((s, b) => s + calcBroker(b).myShare, 0)
   const afterExpenses = totalMyShare - Number(month.expenses)
-  // Aron bere % až z částky PO expenses
   const aronAmt = month.brokers.reduce((s, b) => {
     const myShare = Number(b.payout) * (Number(b.my_pct) / 100)
     const ratio = totalMyShare > 0 ? myShare / totalMyShare : 0
