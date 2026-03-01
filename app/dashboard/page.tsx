@@ -28,7 +28,7 @@ export default async function DashboardPage() {
     .select('*, brokers(*)')
     .eq('user_id', user.id)
 
-  const sorted = (months || []).sort((a, b) => parseMonthDate(a.label) - parseMonthDate(b.label))
+  const sorted = (months || []).sort((a, b) => parseMonthDate(b.label) - parseMonthDate(a.label))
 
   return <DashboardClient initialMonths={sorted} userId={user.id} userEmail={user.email || ''} />
 }
