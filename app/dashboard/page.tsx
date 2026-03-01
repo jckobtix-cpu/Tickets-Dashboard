@@ -1,19 +1,17 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { redirect } from 'next/navigation'
-import DashboardClient from './DashboardClient'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-export default async function DashboardPage() {
+export async function createServerSupabaseClient() {
   const supabase = createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
-
-  // Načti měsíce z databáze
-  const { data: months } = await supabase
-    .from('months')
-    .select('*, brokers(*)')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: true })
-
-  return <DashboardClient initialMonths={months || []} userId={user.id} userEmail={user.email || ''} />
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value },
+        set(name: string, value: string, options: any) { cookieStore.set({ name, value, ...options }) },
+        remove(name: string, options: any) { cookieStore.set({ name, value: '', ...options }) },
+      },
+    }
+  )
 }
