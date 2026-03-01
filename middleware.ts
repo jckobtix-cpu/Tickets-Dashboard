@@ -26,12 +26,10 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Pokud není přihlášen a jde na dashboard → přesměruj na login
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Pokud je přihlášen a jde na login → přesměruj na dashboard
   if (user && request.nextUrl.pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
