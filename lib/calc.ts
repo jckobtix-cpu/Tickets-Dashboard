@@ -1,10 +1,9 @@
-export const BOSS_SPLIT = 0.30   // šéf platí účty, ty dostaneš 30% z payoutu
-export const ARON_SPLIT = 0.50   // 50% z tvého podílu posíláš Aronovi
-
 export interface Broker {
   id: string
   name: string
   payout: number
+  my_pct: number
+  aron_pct: number
 }
 
 export interface Month {
@@ -17,19 +16,25 @@ export interface Month {
 
 export interface MonthCalc {
   totalPayout: number
-  myShare: number        // 30% od šéfa
-  afterExpenses: number  // po odečtení nákladů
-  aronAmt: number        // 50% Aronovi
-  myProfit: number       // tvůj čistý zisk
+  myShare: number
+  afterExpenses: number
+  aronAmt: number
+  myProfit: number
+}
+
+export function calcBroker(b: Broker) {
+  const myShare = Number(b.payout) * (Number(b.my_pct) / 100)
+  const aronAmt = myShare * (Number(b.aron_pct) / 100)
+  return { myShare, aronAmt, myProfit: myShare - aronAmt }
 }
 
 export function calcMonth(month: { brokers: Broker[], expenses: number }): MonthCalc {
   const totalPayout = month.brokers.reduce((s, b) => s + Number(b.payout), 0)
-  const myShare = totalPayout * BOSS_SPLIT
-  const afterExpenses = myShare - Number(month.expenses)
-  const aronAmt = afterExpenses > 0 ? afterExpenses * ARON_SPLIT : 0
-  const myProfit = afterExpenses - aronAmt
-  return { totalPayout, myShare, afterExpenses, aronAmt, myProfit }
+  const totalMyShare = month.brokers.reduce((s, b) => s + calcBroker(b).myShare, 0)
+  const totalAron = month.brokers.reduce((s, b) => s + calcBroker(b).aronAmt, 0)
+  const afterExpenses = totalMyShare - Number(month.expenses)
+  const myProfit = afterExpenses - totalAron
+  return { totalPayout, myShare: totalMyShare, afterExpenses, aronAmt: totalAron, myProfit }
 }
 
 export function calcTotals(months: (Month & MonthCalc)[]) {
@@ -41,9 +46,6 @@ export function calcTotals(months: (Month & MonthCalc)[]) {
     mine: a.mine + m.myProfit,
   }), { payout: 0, myShare: 0, expenses: 0, aron: 0, mine: 0 })
 }
-
-export const fmt = (n: number) =>
-  new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 
 export const fmtShort = (n: number) =>
   `$${Math.abs(Math.round(n)).toLocaleString('en-US')}`
