@@ -87,7 +87,7 @@ export default function DashboardClient({
   const pctInp = { ...inp, width: '100%', color: '#00ff88', fontWeight: 700, textAlign: 'center' as const }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#060808', color: '#e2e8f0', fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#060808', color: '#e2e8f0', fontFamily: "'DM Sans', sans-serif", position: 'relative', overflow: 'hidden' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; }
@@ -95,12 +95,45 @@ export default function DashboardClient({
         @keyframes up { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        @keyframes scanline { 0%{top:-10%} 100%{top:110%} }
+        @keyframes flicker { 0%,100%{opacity:0.7} 50%{opacity:1} 75%{opacity:0.85} }
         .mcard { transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; cursor: pointer; }
-        .mcard:hover { border-color: #00ff88 !important; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,255,136,0.1); }
+        .mcard:hover { border-color: #00ff88 !important; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,255,136,0.12), 0 0 0 1px rgba(0,255,136,0.1); }
         .brow:hover { background: rgba(0,255,136,0.05) !important; }
         input:focus { outline: none; border-color: #00ff88 !important; box-shadow: 0 0 0 2px rgba(0,255,136,0.1); }
         input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
       `}</style>
+
+      {/* LEFT NEON LINE */}
+      <div style={{ position: 'fixed', left: 0, top: 0, width: 2, height: '100vh', background: 'linear-gradient(to bottom, transparent 0%, #00ff88 25%, #00ff88 75%, transparent 100%)', boxShadow: '0 0 12px #00ff88, 0 0 30px rgba(0,255,136,0.35)', zIndex: 10, animation: 'flicker 5s ease-in-out infinite', pointerEvents: 'none' }} />
+      {/* RIGHT NEON LINE */}
+      <div style={{ position: 'fixed', right: 0, top: 0, width: 2, height: '100vh', background: 'linear-gradient(to bottom, transparent 0%, #00ff88 25%, #00ff88 75%, transparent 100%)', boxShadow: '0 0 12px #00ff88, 0 0 30px rgba(0,255,136,0.35)', zIndex: 10, animation: 'flicker 5s ease-in-out infinite 1.5s', pointerEvents: 'none' }} />
+
+      {/* CORNER — top left */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: 64, height: 64, zIndex: 11, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: 64, height: 2, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, width: 2, height: 64, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+      </div>
+      {/* CORNER — top right */}
+      <div style={{ position: 'fixed', top: 0, right: 0, width: 64, height: 64, zIndex: 11, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 64, height: 2, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 2, height: 64, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+      </div>
+      {/* CORNER — bottom left */}
+      <div style={{ position: 'fixed', bottom: 0, left: 0, width: 64, height: 64, zIndex: 11, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: 64, height: 2, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: 2, height: 64, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+      </div>
+      {/* CORNER — bottom right */}
+      <div style={{ position: 'fixed', bottom: 0, right: 0, width: 64, height: 64, zIndex: 11, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 64, height: 2, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 2, height: 64, background: '#00ff88', boxShadow: '0 0 10px #00ff88, 0 0 20px rgba(0,255,136,0.4)' }} />
+      </div>
+
+      {/* AMBIENT GLOW */}
+      <div style={{ position: 'fixed', bottom: -120, left: '50%', transform: 'translateX(-50%)', width: 700, height: 240, background: 'radial-gradient(ellipse, rgba(0,255,136,0.05) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      {/* SCANLINE */}
+      <div style={{ position: 'fixed', left: 0, right: 0, height: 2, background: 'linear-gradient(to right, transparent, rgba(0,255,136,0.12), transparent)', animation: 'scanline 10s linear infinite', zIndex: 1, pointerEvents: 'none' }} />
 
       {/* TOPBAR */}
       <div style={{ background: '#080d08', borderBottom: '1px solid #0d2b0d', padding: '0 28px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
